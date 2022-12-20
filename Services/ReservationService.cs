@@ -18,8 +18,25 @@ namespace Varausharjoitus.Services
 
         public async Task<ReservationDTO> CreateReservationAsync(ReservationDTO dto)
         {
+            if(dto.StartTime >= dto.EndTime) //jos alkuaika on sama tai myöhempi kuin loppuaika
+            {
+                return null;
+            }
+
+            Item target = await _itemRepository.GetItemAsync(dto.Target); //tarkistetaan että itemi on olemassa
+            if(target == null)
+            {
+                return null;
+            }
+
+            IEnumerable<Reservation> reservations = await _repository.GetReservationsAsync(target, dto.StartTime, dto.EndTime); //tarkistetaan onko itemille jo olemassaoleva varraus tälle aikavälille
+            if(reservations.Count() > 0)
+            {
+                return null;
+            }
+
             Reservation newReservation = await DTOToReservation(dto);
-            await _repository.AddReservationAsync(newReservation);
+            newReservation = await _repository.AddReservationAsync(newReservation);
             return ReservationToDTO(newReservation);
         }
 
@@ -86,6 +103,11 @@ namespace Varausharjoitus.Services
             }
             return ReservationToDTO(updatedReservation);
         }
+
+
+        /// /// /// /// /// ///
+        /// MUUTOSFUNKTIOT: ///
+        /// /// /// /// /// ///
 
         private async Task<Reservation> DTOToReservation(ReservationDTO dto)
         {

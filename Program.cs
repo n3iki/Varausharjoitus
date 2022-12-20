@@ -46,6 +46,16 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 
+//CORS jos pyöritetään localhost frontend, vaihda tarvittaessa portti 4200 johonkin toiseen:
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -60,6 +70,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseMiddleware<ApiKeyMiddleware>();
 app.UseAuthentication();

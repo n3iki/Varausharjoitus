@@ -27,7 +27,7 @@ namespace Varausharjoitus.Controllers
         }
 
         /// <summary>
-        /// Get all items from database
+        /// GET kaikille itemeille
         /// </summary>
         /// <returns>list of items</returns>
         // GET: api/Items
@@ -38,15 +38,33 @@ namespace Varausharjoitus.Controllers
             return Ok(await _service.GetItemsAsync());
         }
 
+        /// GET hakutermin perusteella
+        // GET: api/Items/query
+        [HttpGet("{query}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<ItemDTO>>> QueryItems(string query)
+        {
+            return Ok(await _service.QueryItemsAsync(query));
+        }
+
+        /// GET tietyn käyttäjän itemeille
+        // GET: api/Items/user/username
+        [HttpGet("user/{username}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems(string username)
+        {
+            return Ok(await _service.GetItemsAsync(username));
+        }
+
         /// <summary>
-        /// Get a single item
+        /// GET yhdelle ID:lle
         /// </summary>
         /// <param name="id">Id of item</param>
         /// <returns>An item</returns>
         /// <response code="200">Returns the item</response>
         /// <response code="404">Item not found from database</response>
         // GET: api/Items/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<ItemDTO>> GetItem(long id)
         {
             var item = await _service.GetItemAsync(id);

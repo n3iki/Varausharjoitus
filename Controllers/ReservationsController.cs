@@ -104,13 +104,13 @@ namespace Varausharjoitus.Controllers
                 return Unauthorized();
             }
 
-            ReservationDTO newReservation = await _service.CreateReservationAsync(reservation);
-            if (newReservation == null)
+            reservation = await _service.CreateReservationAsync(reservation);
+            if (reservation == null)
             {
                 return Problem();
             }
 
-            return CreatedAtAction("GetReservation", new { id = newReservation.Id }, newReservation);
+            return CreatedAtAction("GetReservation", new { id = reservation.Id }, reservation);
         
      
         }

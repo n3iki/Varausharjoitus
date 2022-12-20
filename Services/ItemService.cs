@@ -90,6 +90,40 @@ namespace Varausharjoitus.Services
             return ItemToDTO(updatedItem);
         }
 
+        public async Task<IEnumerable<ItemDTO>> QueryItemsAsync(String query)
+        {
+            IEnumerable<Item> items = await _repository.QueryItems(query);
+            List<ItemDTO> itemDTOs = new List<ItemDTO>();
+            foreach(Item i in items) // käydään lista läpi ja muutetaan kaikki itemDTO:ksi ja lisätään se itemDTOs -listaan
+            {
+                itemDTOs.Add(ItemToDTO(i));
+            }
+            return itemDTOs;
+        }
+
+        public async Task<IEnumerable<ItemDTO>> GetItemsAsync(string username)
+        {
+            User owner = await _userRepository.GetUserAsync(username);
+            if(owner == null)
+            {
+                return null;
+            }
+            IEnumerable<Item> items = await _repository.GetItemsAsync(owner);
+            List<ItemDTO> itemDTOs = new List<ItemDTO>();
+            foreach (Item i in items) // käydään lista läpi ja muutetaan kaikki itemDTO:ksi ja lisätään se itemDTOs -listaan
+            {
+                itemDTOs.Add(ItemToDTO(i));
+            }
+            return itemDTOs;
+
+        }
+
+
+
+        /// /// /// /// /// ///
+        /// MUUTOSFUNKTIOT: ///
+        /// /// /// /// /// ///
+
         private async Task<Item> DTOToItem(ItemDTO dto)
         {
             Item newItem = new Item();
@@ -153,5 +187,6 @@ namespace Varausharjoitus.Services
             dto.Description = image.Description;
             return dto;
         }
+
     }
 }

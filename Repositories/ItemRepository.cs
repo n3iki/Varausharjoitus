@@ -69,6 +69,16 @@ namespace Varausharjoitus.Repositories
             return await _context.Items.Include(i => i.Images).ToListAsync();
         }
 
+        public async Task<IEnumerable<Item>> GetItemsAsync(User user)
+        {
+            return await _context.Items.Include(i => i.Owner).Where(x => x.Owner == user).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Item>> QueryItems(string query)
+        {
+            return await _context.Items.Include(i => i.Owner).Where(x => x.Name.Contains(query)).ToListAsync();
+        }
+
         public async Task<Item> UpdateItemAsync(Item item)
         {
             try
