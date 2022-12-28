@@ -28,14 +28,19 @@ namespace Varausharjoitus.Controllers
             _authenticationService = authenticationService;
         }
 
-        // GET: api/Reservations
+
+        /// <summary>
+        /// Palauttaa kaikki varaukset
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
             return Ok(await _service.GetReservationsAsync());
         }
 
-        // GET: api/Reservations/5
+        /// <summary>
+        /// Palauttaa haetun varauksen ID:n perusteella
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<ReservationDTO>> GetReservation(long id)
         {
@@ -49,8 +54,9 @@ namespace Varausharjoitus.Controllers
             return reservation;
         }
 
-        // PUT: api/Reservations/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Muokkaa varausta
+        /// </summary>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutReservation(long id, ReservationDTO reservation)
@@ -89,8 +95,9 @@ namespace Varausharjoitus.Controllers
             return NoContent();
         }
 
-        // POST: api/Reservations
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Lisää uuden varauksen
+        /// </summary>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ReservationDTO>> PostReservation(ReservationDTO reservation)
@@ -115,7 +122,9 @@ namespace Varausharjoitus.Controllers
      
         }
 
-        // DELETE: api/Reservations/5
+        /// <summary>
+        /// Poistaa varauksen
+        /// </summary>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteReservation(long id)

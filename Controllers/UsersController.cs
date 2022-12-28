@@ -28,14 +28,18 @@ namespace Varausharjoitus.Controllers
             _authenticationService = authenticationService;
         }
 
-        // GET: api/Users
+        /// <summary>
+        /// Palauttaa kaikki käyttäjät
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
+        /// <summary>
+        /// Palauttaa haetun käyttäjän ID:n perusteella
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(long id)
         {
@@ -49,8 +53,9 @@ namespace Varausharjoitus.Controllers
             return user;
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Muokkaa käyttäjää
+        /// </summary>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutUser(long id, User user)
@@ -95,8 +100,9 @@ namespace Varausharjoitus.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Lisää uuden käyttäjän
+        /// </summary>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<UserDTO>> PostUser(User user)
@@ -118,7 +124,9 @@ namespace Varausharjoitus.Controllers
             return CreatedAtAction("GetUser", new { firstName = newUser.FirstName }, newUser);
         }
 
-        // DELETE: api/Users/5
+        /// <summary>
+        /// Poistaa käyttäjän
+        /// </summary>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteUser(long id)

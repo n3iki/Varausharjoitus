@@ -27,9 +27,18 @@ namespace Varausharjoitus.Repositories
             return reservation;
         }
 
-        public Task<bool> DeleteReservationAsync(Reservation reservation)
+        public async Task<bool> DeleteReservationAsync(Reservation reservation)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Reservations.Remove(reservation);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task<Reservation> GetReservationAsync(long id)
@@ -47,9 +56,17 @@ namespace Varausharjoitus.Repositories
             return await _context.Reservations.Include(i => i.Owner).Include(x => x.Target).Where(x => x.Target == target && ((x.StartTime >= start && x.StartTime < end) || (x.EndTime >= start && x.EndTime < end) || (x.StartTime <= start && x.EndTime >= end))).ToListAsync();
         }
 
-        public Task<Reservation> UpdateReservationAsync(Reservation reservation)
+        public async Task<Reservation> UpdateReservationAsync(Reservation reservation)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            return reservation;
         }
     }
 }

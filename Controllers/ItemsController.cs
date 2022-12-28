@@ -27,10 +27,8 @@ namespace Varausharjoitus.Controllers
         }
 
         /// <summary>
-        /// GET kaikille itemeille
+        /// Palauttaa kaikki itemit
         /// </summary>
-        /// <returns>list of items</returns>
-        // GET: api/Items
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems()
@@ -38,8 +36,10 @@ namespace Varausharjoitus.Controllers
             return Ok(await _service.GetItemsAsync());
         }
 
-        /// GET hakutermin perusteella
-        // GET: api/Items/query
+
+        /// <summary>
+        /// Palauttaa itemit, joissa hakusana
+        /// </summary>
         [HttpGet("{query}")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> QueryItems(string query)
@@ -47,8 +47,10 @@ namespace Varausharjoitus.Controllers
             return Ok(await _service.QueryItemsAsync(query));
         }
 
-        /// GET tietyn käyttäjän itemeille
-        // GET: api/Items/user/username
+
+        /// <summary>
+        /// Palauttaa yhden käyttäjän kaikki itemit
+        /// </summary>
         [HttpGet("user/{username}")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems(string username)
@@ -56,14 +58,10 @@ namespace Varausharjoitus.Controllers
             return Ok(await _service.GetItemsAsync(username));
         }
 
+
         /// <summary>
-        /// GET yhdelle ID:lle
+        /// Palauttaa haetun itemin ID:n perusteella
         /// </summary>
-        /// <param name="id">Id of item</param>
-        /// <returns>An item</returns>
-        /// <response code="200">Returns the item</response>
-        /// <response code="404">Item not found from database</response>
-        // GET: api/Items/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ItemDTO>> GetItem(long id)
         {
@@ -77,8 +75,10 @@ namespace Varausharjoitus.Controllers
             return item;
         }
 
-        // PUT: api/Items/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Muokkaa itemiä
+        /// </summary>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutItem(long id, ItemDTO item)
@@ -104,8 +104,10 @@ namespace Varausharjoitus.Controllers
             return NoContent();
         }
 
-        // POST: api/Items
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Lisää uuden itemin
+        /// </summary>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ItemDTO>> PostItem(ItemDTO item)
@@ -127,7 +129,10 @@ namespace Varausharjoitus.Controllers
             return CreatedAtAction("GetItem", new { id = newItem.Id }, newItem);
         }
 
-        // DELETE: api/Items/5
+
+        /// <summary>
+        /// Poistaa itemin
+        /// </summary>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteItem(long id)
