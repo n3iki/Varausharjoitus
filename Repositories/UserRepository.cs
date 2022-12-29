@@ -40,9 +40,9 @@ namespace Varausharjoitus.Repositories
             return true;
         }
 
-        public async Task<User> GetUserAsync(string userName)
+        public async Task<User> GetUserAsync(long id)
         {
-            User user = _context.Users.Where(x => x.UserName == userName).FirstOrDefault();
+            User user = _context.Users.Where(x => x.Id == id).FirstOrDefault();
             return user;
         }
 

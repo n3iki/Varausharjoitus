@@ -9,7 +9,7 @@ namespace Varausharjoitus.Middleware
     {
         Task<User> Authenticate(string username, string password);
         Task<bool> IsAllowed(String username, ItemDTO item); //tarkistetaan saako käyttäjä muokata itemiä
-        Task<bool> IsAllowed(String username, User user); //tarkistetaan saako käyttäjä muokata useria
+        Task<bool> IsAllowed(String username, UserDTO user); //tarkistetaan saako käyttäjä muokata useria
         Task<bool> IsAllowed(String username, ReservationDTO reservation); //tarkistetaan saako käyttäjä muokata reservationia
     }
 
@@ -57,7 +57,7 @@ namespace Varausharjoitus.Middleware
             {
                 return false;
             }
-            if(dbItem == null && item.Owner == user.UserName) //jos lisätään uutta itemiä eli itemiä ei löydy tietokannasta, tarkistetaan että postattavan itemin omistaja on sama kuin postaaja
+            if(dbItem == null && item.Owner == user.Id) //jos lisätään uutta itemiä eli itemiä ei löydy tietokannasta, tarkistetaan että postattavan itemin omistaja on sama kuin postaaja
             {
                 return true;
             }
@@ -72,9 +72,9 @@ namespace Varausharjoitus.Middleware
             return false;
         }
 
-        public async Task<bool> IsAllowed(string username, User user) //tarkistetaan saako käyttäjä muokata useria
+        public async Task<bool> IsAllowed(string username, UserDTO user) //tarkistetaan saako käyttäjä muokata useria
         {
-            User? dbuser = await _context.Users.Where(x => x.UserName == user.UserName).FirstOrDefaultAsync(); //etsitään käyttäjänimi käyttäjistä
+            User? dbuser = await _context.Users.Where(x => x.UserName == username).FirstOrDefaultAsync(); //etsitään käyttäjä käyttäjänimen perusteella
 
             if (dbuser.UserName == username) //tarkistetaan onko muokkaava käyttäjä sama kuin muokattava käyttäjä
             {
@@ -96,7 +96,7 @@ namespace Varausharjoitus.Middleware
             }
 
 
-            if (dbReservation.Id == null && dbReservation.Owner.UserName == user.UserName) //jos lisätään uutta varausta eli varausta ei löydy tietokannasta, tarkistetaan että postattavan varauksen omistaja on sama kuin postaaja
+            if (dbReservation == null && reservation.Owner == user.Id) //jos lisätään uutta varausta eli varausta ei löydy tietokannasta, tarkistetaan että postattavan varauksen omistaja on sama kuin postaaja
             {
                 return true;
             }

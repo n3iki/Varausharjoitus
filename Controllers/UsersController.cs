@@ -17,13 +17,11 @@ namespace Varausharjoitus.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ReservationContext _context;
         private readonly IUserService _service;
         private readonly IUserAuthenticationService _authenticationService;
 
-        public UsersController(ReservationContext context, IUserService service, IUserAuthenticationService authenticationService)
+        public UsersController(IUserService service, IUserAuthenticationService authenticationService)
         {
-            _context = context;
             _service = service;
             _authenticationService = authenticationService;
         }
@@ -31,19 +29,31 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Palauttaa kaikki käyttäjät
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /users/
+        /// </remarks>
         [HttpGet]
+        [ActionName(nameof(GetUser))] //sisäinen routing menee sekaisin Async -loppuisesta funktiosta, tämä estää userin postin errorit
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return Ok(await _service.GetUsersAsync());
         }
 
         /// <summary>
         /// Palauttaa haetun käyttäjän ID:n perusteella
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /users/käyttäjän id
+        /// </remarks>
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(long id)
+
+        public async Task<ActionResult<UserDTO>> GetUser(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _service.GetUserAsync(id);
 
             if (user == null)
             {
@@ -56,9 +66,21 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Muokkaa käyttäjää
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     POST /users/käyttäjän id
+        ///     {
+        ///      "id": käyttjän id,
+        ///      "userName": "Käyttäjätunnus",
+        ///      "password": "salasana",
+        ///      "firstName": "Etunimi",
+        ///      "lastName": "Sukunimi"
+        ///     }
+        /// </remarks>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutUser(long id, UserDTO user)
         {
             if (id != user.Id) //tarkistetaan löytyykö käyttäjää
             {
@@ -72,48 +94,33 @@ namespace Varausharjoitus.Controllers
             {
                 return Unauthorized();
             }
-            try
-            {
-            _context.Entry(user).State = EntityState.Modified; //TÄSSÄ ONGELMA HUOM?
-            }
-            catch(Exception ex)
-            {
-                return Problem();
-            }
 
-            try
+            UserDTO updatedUser = await _service.UpdateUserAsync(user);
+            if (updatedUser == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
         /// <summary>
         /// Lisää uuden käyttäjän
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     POST /users
+        ///     {
+        ///      "userName": "Käyttäjätunnus",
+        ///      "password": "salasana",
+        ///      "firstName": "Etunimi",
+        ///      "lastName": "Sukunimi"
+        ///     }
+        /// </remarks>
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult<UserDTO>> PostUser(User user)
         {
-            //tarkistus, onko käyttäjällä oikeus muokata käyttäjää
-            bool isAllowed = await _authenticationService.IsAllowed(this.User.FindFirst(ClaimTypes.Name).Value, user);
-
-            if (!isAllowed) //jos ei
-            {
-                return Unauthorized();
-            }
+         
 
             UserDTO newUser = await _service.CreateUserAsync(user);
             if (newUser == null)
@@ -121,33 +128,34 @@ namespace Varausharjoitus.Controllers
                 return Problem();
             }
 
-            return CreatedAtAction("GetUser", new { firstName = newUser.FirstName }, newUser);
+            return CreatedAtAction((nameof(GetUser)), new { firstName = newUser.FirstName }, newUser);
         }
 
         /// <summary>
         /// Poistaa käyttäjän
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     DELETE /users/käyttäjän id
+        /// </remarks>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteUser(long id)
         {
+            //tarkista oikeus
+            UserDTO user = new UserDTO();
+            user.Id = id;
+            bool isAllowed = await _authenticationService.IsAllowed(this.User.FindFirst(ClaimTypes.Name).Value, user);
 
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            if (await _service.DeleteUserAsync(id))
             {
-                return NotFound();
+                return Ok();
             }
+            return NotFound();
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
 
-            return NoContent();
         }
 
-        private bool UserExists(long id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
     }
 }

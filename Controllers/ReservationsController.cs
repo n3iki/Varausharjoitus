@@ -17,13 +17,11 @@ namespace Varausharjoitus.Controllers
     [ApiController]
     public class ReservationsController : ControllerBase
     {
-        private readonly ReservationContext _context;
         private readonly IReservationService _service;
         private readonly IUserAuthenticationService _authenticationService;
 
-        public ReservationsController(ReservationContext context, IReservationService service, IUserAuthenticationService authenticationService)
+        public ReservationsController(IReservationService service, IUserAuthenticationService authenticationService)
         {
-            _context = context;
             _service = service;
             _authenticationService = authenticationService;
         }
@@ -32,6 +30,11 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Palauttaa kaikki varaukset
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /reservations/
+        ///</remarks>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
@@ -41,6 +44,11 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Palauttaa haetun varauksen ID:n perusteella
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /reservations/varauksen id
+        ///</remarks>
         [HttpGet("{id}")]
         public async Task<ActionResult<ReservationDTO>> GetReservation(long id)
         {
@@ -57,6 +65,17 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Muokkaa varausta
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     PUT /reservations
+        ///     {
+        ///      "target": itemin ID,
+        ///      "owner": käyttäjän ID,
+        ///      "startTime": yyyy-MM-ddTHH:mm:ss.SSSz,
+        ///      "startTime": yyyy-MM-ddTHH:mm:ss.SSSz,
+        ///     }
+        /// </remarks>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutReservation(long id, ReservationDTO reservation)
@@ -74,30 +93,30 @@ namespace Varausharjoitus.Controllers
                 return Unauthorized();
             }
 
-            _context.Entry(reservation).State = EntityState.Modified;
-
-            try
+            ReservationDTO updatedReservation = await _service.UpdateReservationAsync(reservation);
+            if (updatedReservation == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReservationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
+
+
 
         /// <summary>
         /// Lisää uuden varauksen
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     POST /reservations
+        ///     {
+        ///      "target": itemin ID,
+        ///      "owner": käyttäjän ID,
+        ///      "startTime": yyyy-MM-ddTHH:mm:ss.SSSz,
+        ///      "startTime": yyyy-MM-ddTHH:mm:ss.SSSz,
+        ///     }
+        /// </remarks>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ReservationDTO>> PostReservation(ReservationDTO reservation)
@@ -125,6 +144,11 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Poistaa varauksen
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     DELETE /reservations/varauksen ID
+        ///</remarks>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteReservation(long id)
@@ -144,9 +168,5 @@ namespace Varausharjoitus.Controllers
             
         }
 
-        private bool ReservationExists(long id)
-        {
-            return _context.Reservations.Any(e => e.Id == id);
-        }
     }
 }

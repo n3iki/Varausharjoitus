@@ -139,7 +139,7 @@ namespace Varausharjoitus.Services
             dto.EndTime = reservation.EndTime;
             if (reservation.Owner != null)
             {
-                dto.Owner = reservation.Owner.UserName;
+                dto.Owner = reservation.Owner.Id;
 
             }
             if (reservation.Target != null)

@@ -18,7 +18,7 @@ namespace Varausharjoitus.Models
         [Required]
         public long Target { get; set; }
         [Required]
-        public String Owner { get; set; }
+        public long Owner { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
     }

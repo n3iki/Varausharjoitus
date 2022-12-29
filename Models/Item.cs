@@ -24,7 +24,7 @@ namespace Varausharjoitus.Models
         public String Name { get; set; }
         public String? Description { get; set; }
         [Required]
-        public String Owner { get; set; }
+        public long Owner { get; set; }
         public virtual List<ImageDTO>? Images { get; set; }
     }
 }

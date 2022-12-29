@@ -29,6 +29,11 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Palauttaa kaikki itemit
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /items
+        ///</remarks>
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems()
@@ -38,8 +43,13 @@ namespace Varausharjoitus.Controllers
 
 
         /// <summary>
-        /// Palauttaa itemit, joissa hakusana
+        /// Palauttaa itemit, jonka nimessä hakusana
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /items/hakusana
+        ///</remarks>
         [HttpGet("{query}")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> QueryItems(string query)
@@ -51,17 +61,27 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Palauttaa yhden käyttäjän kaikki itemit
         /// </summary>
-        [HttpGet("user/{username}")]
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /items/user/käyttäjän id
+        ///</remarks>
+        [HttpGet("user/{id:int}")]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems(string username)
+        public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems(long id)
         {
-            return Ok(await _service.GetItemsAsync(username));
+            return Ok(await _service.GetItemsAsync(id));
         }
 
 
         /// <summary>
         /// Palauttaa haetun itemin ID:n perusteella
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     GET /items/itemin id
+        ///</remarks>
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ItemDTO>> GetItem(long id)
         {
@@ -79,6 +99,22 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Muokkaa itemiä
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     PUT /items/id
+        ///     {
+        ///     "name": "Itemin nimi",
+        ///     "description": "Itemin lisätiedot",
+        ///     "owner": omistajan ID,
+        ///     "images": [
+        ///       {
+        ///         "url": "kuvaosoite",
+        ///         "description": "kuvateksti"
+        ///       }
+        ///               ]
+        ///       }
+        ///</remarks>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutItem(long id, ItemDTO item)
@@ -108,6 +144,22 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Lisää uuden itemin
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     POST /items
+        ///     {
+        ///     "name": "Itemin nimi",
+        ///     "description": "Itemin lisätiedot",
+        ///     "owner": omistajan ID,
+        ///     "images": [
+        ///       {
+        ///         "url": "kuvaosoite",
+        ///         "description": "kuvateksti"
+        ///       }
+        ///               ]
+        ///       }
+        ///</remarks>
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<ItemDTO>> PostItem(ItemDTO item)
@@ -133,6 +185,11 @@ namespace Varausharjoitus.Controllers
         /// <summary>
         /// Poistaa itemin
         /// </summary>
+        /// <remarks>
+        /// Esimerkkipyyntö:
+        /// 
+        ///     DELETE /items/itemin id
+        ///</remarks>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteItem(long id)

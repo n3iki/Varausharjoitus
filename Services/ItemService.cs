@@ -101,9 +101,9 @@ namespace Varausharjoitus.Services
             return itemDTOs;
         }
 
-        public async Task<IEnumerable<ItemDTO>> GetItemsAsync(string username)
+        public async Task<IEnumerable<ItemDTO>> GetItemsAsync(long id)
         {
-            User owner = await _userRepository.GetUserAsync(username);
+            User owner = await _userRepository.GetUserAsync(id);
             if(owner == null)
             {
                 return null;
@@ -165,7 +165,7 @@ namespace Varausharjoitus.Services
       
             if (item.Owner != null)
             {
-                dto.Owner = item.Owner.UserName;
+                dto.Owner = item.Owner.Id;
 
             }
             return dto;

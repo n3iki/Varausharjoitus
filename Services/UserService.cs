@@ -52,9 +52,9 @@ namespace Varausharjoitus.Services
         }
 
 
-        public async Task<bool> DeleteUserAsync(string UserName)
+        public async Task<bool> DeleteUserAsync(long id)
         {
-            User oldUser = await _repository.GetUserAsync(UserName);
+            User oldUser = await _repository.GetUserAsync(id);
             if (oldUser == null)
             {
                 return false;
@@ -63,9 +63,9 @@ namespace Varausharjoitus.Services
             return await _repository.DeleteUserAsync(oldUser);
         }
 
-        public async Task<UserDTO> GetUserAsync(string UserName)
+        public async Task<UserDTO> GetUserAsync(long id)
         {
-            User user = await _repository.GetUserAsync(UserName);
+            User user = await _repository.GetUserAsync(id);
 
             if (user != null)
             {
@@ -88,7 +88,7 @@ namespace Varausharjoitus.Services
 
         public async Task<UserDTO> UpdateUserAsync(UserDTO user)
         {
-            User oldUser = await _repository.GetUserAsync(user.UserName);
+            User oldUser = await _repository.GetUserAsync(user.Id);
             if (oldUser == null)
             {
                 return null;
@@ -108,6 +108,7 @@ namespace Varausharjoitus.Services
         private UserDTO UserToDTO(User user)
         {
             UserDTO dto = new UserDTO();
+            dto.Id = user.Id;
             dto.FirstName = user.FirstName;
             dto.LastName = user.LastName;
             dto.UserName = user.UserName;
@@ -120,6 +121,7 @@ namespace Varausharjoitus.Services
         private async Task<User> DTOToUser(UserDTO dto)
         {
             User user = new User();
+            user.Id = dto.Id;
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
             user.UserName = dto.UserName;
