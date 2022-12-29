@@ -15,3 +15,5 @@ API-funktioiden dokumentaatio löytyy Swaggerista ja mahdollisesti .pdf -tiedost
 -Usealla käyttäjällä voi olla sama käyttäjätunnus (helppo korjata, mutta aika ei riitä)
 
 -Pyyntöjen palautuskoodeila (200, 401, 204...) ei ole selitteitä dokumentoinnissa
+
+-Kuvien käsittely API:ssa esim. ImageControllerilla on jätetty kokonaan pois. Kuvat ovat pelkkä linkki varauksen yhteydessä joten periaatteessa Image -luokkaa ei tarvitsisi ollenkaan, aika kuitenkin loppui kesken joten nyt vähän keskeneräisesti toteutettu mutta toimii.
